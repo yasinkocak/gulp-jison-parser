@@ -30,6 +30,7 @@ module.exports = function (options) {
             }
             file.contents = new Buffer(new Generator(grammar, options).generate());
             file.path = gutil.replaceExtension(file.path, ".js");
+            this.push(file);
         } catch (err) {
             // Convert the keys so PluginError can read them
             err.lineNumber = err.line;
@@ -40,6 +41,6 @@ module.exports = function (options) {
 
             throw new PluginError('gulp-jison-parser', err);
         }
-        return file;
+        return cb();
     });
 };
