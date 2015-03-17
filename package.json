@@ -1,6 +1,6 @@
 {
   "name": "gulp-jison-parser",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Jison plugin for gulp (gulpjs.com)",
   "repository": {
     "type": "git",
