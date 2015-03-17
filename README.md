@@ -5,7 +5,7 @@ Usage
 -----
 
 ```javascript
-var jison = require('gulp-jison');
+var jison = require('gulp-jison-parser');
 
 gulp.task('jison', function() {
     return gulp.src('./src/*.jison')
@@ -16,7 +16,7 @@ gulp.task('jison', function() {
 
 With a seperate lexical grammar file
 ```javascript
-var jison = require('gulp-jison');
+var jison = require('gulp-jison-parser');
 
 gulp.task('jison', function() {
     return gulp.src('./src/*.jison')
