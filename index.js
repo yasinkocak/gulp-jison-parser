@@ -1,42 +1,45 @@
-var through = require('through2');
-var gutil = require('gulp-util');
-var PluginError = gutil.PluginError;
-var Generator = require('jison').Generator;
+var through = require('through2'),
+    fs = require('fs'),
+    gutil = require('gulp-util'),
+    PluginError = gutil.PluginError;
 
-var ebnfParser = require('ebnf-parser');
-var lexParser  = require('lex-parser');
-var fs = require('fs');
-
-const PLUGIN_NAME = 'gulp-jison';
+var Generator = require('jison').Generator,
+    ebnfParser = require('ebnf-parser'),
+    lexParser = require('lex-parser');
 
 module.exports = function (options) {
     options = options || {};
 
-    return through.obj(function (file, enc, callback) {
+    return through.obj(function (file, enc, cb) {
+
         if (file.isNull()) {
-            this.push(file);
-            return callback();
+            return cb(null, file);
         }
 
         if (file.isStream()) {
-            this.emit('error', new PluginError(PLUGIN_NAME, 'Streams not supported'));
-            return callback();
+            return cb(new PluginError('gulp-jison-parser', 'Streams not supported'));
         }
 
-        if (file.isBuffer()) {
-            try {
-                var grammar = ebnfParser.parse(file.contents.toString());
-                if (options.lexFile) {
-                    var lexFile = fs.readFileSync(options.lexFile, 'utf-8');
-                    grammar.lex = lexParser.parse(lexFile);
-                }
-                file.contents = new Buffer(new Generator(grammar, options).generate());
-                file.path = gutil.replaceExtension(file.path, ".js");
-                this.push(file);
-            } catch (error) {
-                this.emit('error', new PluginError(PLUGIN_NAME, error));
+        var str = file.contents.toString();
+
+        try {
+            var grammar = ebnfParser.parse(str);
+            if (options.lexFile) {
+                var lexFile = fs.readFileSync(options.lexFile, 'utf-8');
+                grammar.lex = lexParser.parse(lexFile);
             }
-            return callback();
+            file.contents = new Buffer(new Generator(grammar, options).generate());
+            file.path = gutil.replaceExtension(file.path, ".js");
+        } catch (err) {
+            // Convert the keys so PluginError can read them
+            err.lineNumber = err.line;
+            err.fileName = err.filename;
+
+            // Add a better error message
+            err.message = err.message + ' in file ' + err.fileName + ' line no. ' + err.lineNumber;
+
+            throw new PluginError('gulp-jison-parser', err);
         }
+        return file;
     });
 };
