@@ -35,5 +35,9 @@
   },
   "bugs": {
     "url": "https://github.com/yasinkocak/gulp-jison-parser/issues"
+  },
+  "devDependencies": {
+    "mocha": "^2.2.1",
+    "should": "^5.2.0"
   }
 }
