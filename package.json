@@ -19,6 +19,9 @@
   "keywords": [
     "gulp",
     "jison",
+    "parser",
+    "lexer",
+    "generator",
     "gulpjison",
     "gulpplugin",
     "gulp-jison",
